@@ -30,6 +30,9 @@ class Sigmoid(ActivationFunction):
         super().__init__()
 
     def activate(self, Z):
+        # Numerical stability: https://stackoverflow.com/a/23194336
+        np.clip(Z, -500, 500)
+
         self.G = 1 / (1 + np.exp(-Z))
         return self.G
     
@@ -76,8 +79,11 @@ class Softmax(ActivationFunction):
         super().__init__()
     
     def activate(self, Z):
+        # Numerical stability: https://stackoverflow.com/a/42606665
+        Z = Z - np.max(Z)
+
         exp_Z = np.exp(Z)
-        sum = np.sum(exp_Z, axis=1, keepdims=True)
+        sum = np.sum(exp_Z, axis=0, keepdims=True)
         self.G = exp_Z / sum
         return self.G
     

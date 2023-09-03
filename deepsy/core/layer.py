@@ -4,9 +4,9 @@ from deepsy.core.functions.activation_functions import ActivationFunction, ReLU
 
 
 class Layer:
-    def __init__(self, nr_in_features, nr_neurons, activation_func: ActivationFunction):
-        self.nr_in_features = nr_in_features
+    def __init__(self, nr_neurons, nr_in_features, activation_func: ActivationFunction):
         self.nr_neurons = nr_neurons
+        self.nr_in_features = nr_in_features
         self.activation_func = activation_func
         self._init_parameters_and_gradients()
 
@@ -24,15 +24,15 @@ class Layer:
     
     def summary(self):
         nr_parameters = self.params['W'].shape[0] * self.params['W'].shape[1] + self.params['b'].shape[0] * self.params['b'].shape[1]
-        return 'Activation={}, # Input features={}, # Neurons={}, Weight shape={}, Bias shape={}, # Parameters={}\n'\
+        return 'Activation function={}, # Input features={}, # Neurons={}, Weight shape={}, Bias shape={}, # Parameters={}\n'\
                     .format(self.activation_func.__class__.__name__, self.nr_in_features, self.nr_neurons, self.params['W'].shape, self.params['b'].shape, nr_parameters)
     
     def get_parameters(self):
-        return self.params['W'], self.params['b']
+        return self.params
     
     def _init_parameters_and_gradients(self):
         W = np.random.randn(self.nr_neurons, self.nr_in_features)
-        if (isinstance(self.activation_name, ReLU)):
+        if (isinstance(self.activation_func, ReLU)):
             # He init
             W *= np.sqrt(2. / self.nr_in_features)
         else:

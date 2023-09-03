@@ -20,15 +20,19 @@ class Model:
             # backward propagation: compute gradients for each layer
             self.neural_network.backward_prop(L)
 
-            
+            # TODO: update gradients
 
-
-
+    def validate(self, X, Y):
+        Y_predicted = self.neural_network.forward_prop(input=X)
+        cost = np.mean(self.loss_func.get_loss(Y_predicted, Y))
+        return Y_predicted, cost
 
     def predict(self, X):
         return self.neural_network.forward_prop(X)
     
     def summary(self):
+        print('Model summary:')
+        print('Loss function={}'.format(self.loss_func.__class__.__name__))
         print(self.neural_network.summary())
     
     def get_neural_network(self):
