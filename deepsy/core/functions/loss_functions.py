@@ -24,7 +24,7 @@ class MSE(LossFunction):
     def get_loss(self, Y_predicted, Y):
         self.Y_predicted = Y_predicted
         self.Y = Y
-        return 0.5 * np.square(self.Y_predicted - self.Y)
+        return 0.5 * (self.Y_predicted - self.Y) ** 2
     
     def derivate(self):
         return self.Y_predicted - self.Y
