@@ -10,21 +10,31 @@ class Model:
         self._loss_func = loss_func
         self.optimizer = optimizer
 
-    def train(self, X, Y, nr_epochs):
+    def train(self, X, Y, nr_epochs, batch_size=64):
         for epoch in range(nr_epochs):
-            # forward propagation
-            Y_predicted = self._neural_network.forward_prop(input=X)
+            batch_start = 0
+            cost = 0
+            nr_batches = float(len(X) / batch_size)
+            while (batch_start < len(X)):
+                batch_end = min(batch_start + batch_size, len(X[0]))
+                X_batch = X[:, batch_start : batch_end]
+                Y_batch = Y[batch_start : batch_end]
 
-            # compute loss & cost
-            L = self._loss_func.get_loss(Y_predicted, Y)
-            cost = np.mean(L)
+                # forward propagation
+                Y_batch_predicted = self._neural_network.forward_prop(input=X_batch)
 
-            # backward propagation: compute gradients for each layer
-            self._neural_network.backward_prop(self._loss_func.derivate())
+                # compute loss & cost
+                cost += np.mean(self._loss_func.get_loss(Y_batch_predicted, Y_batch))
 
-            # update gradients
-            self.optimizer.step(nn_parameters=self._neural_network.get_parameters(), nn_gradients=self._neural_network.get_gradients())
+                # backward propagation: compute gradients for each layer
+                self._neural_network.backward_prop(self._loss_func.derivate())
 
+                # update gradients
+                self.optimizer.step(nn_parameters=self._neural_network.get_parameters(), nn_gradients=self._neural_network.get_gradients())
+
+                batch_start += batch_size
+
+            cost = cost / nr_batches
             print('Epoch {}: cost = {}'.format(epoch + 1, cost))
 
     def validate(self, X, Y):

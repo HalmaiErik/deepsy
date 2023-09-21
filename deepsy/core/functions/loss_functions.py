@@ -31,13 +31,15 @@ class MSE(LossFunction):
     
 
 class BinaryCrossEntropy(LossFunction):
+    EPSILON = 1e-5
+
     def __init__(self):
         super().__init__()
 
     def get_loss(self, Y_predicted, Y):
         self.Y_predicted = Y_predicted
         self.Y = Y
-        return -self.Y * np.log(self.Y_predicted) - (1 - self.Y) * np.log(1 - self.Y_predicted)
+        return -self.Y * np.log(self.Y_predicted + self.EPSILON) - (1 - self.Y) * np.log(1 - self.Y_predicted + self.EPSILON)
     
     def derivate(self):
         return -self.Y / self.Y_predicted + (1 - self.Y) / (1 - self.Y_predicted)
