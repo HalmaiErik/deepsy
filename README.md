@@ -17,7 +17,7 @@ model.train(X_train, Y_train, nr_epochs=400, reg_lambda=0.2)
 Y_validation_predicted = model.validate(X_validation, Y_validation)
 
 # Test
-Y_test_predicted = model.predict(X_test.T)
+Y_test_predicted = model.predict(X_test)
 ```
   
 ### Todo:
