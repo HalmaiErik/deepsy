@@ -12,10 +12,6 @@ class LossFunction(ABC):
     def get_loss(self, Y_predicted, Y):
         pass
 
-    @abstractmethod
-    def derivate(self):
-        pass
-
 
 class MSE(LossFunction):
     def __init__(self):
@@ -25,9 +21,6 @@ class MSE(LossFunction):
         self.Y_predicted = Y_predicted
         self.Y = Y
         return 0.5 * (self.Y_predicted - self.Y) ** 2
-    
-    def derivate(self):
-        return self.Y_predicted - self.Y
     
 
 class BinaryCrossEntropy(LossFunction):
@@ -40,9 +33,6 @@ class BinaryCrossEntropy(LossFunction):
         self.Y_predicted = Y_predicted
         self.Y = Y
         return -self.Y * np.log(self.Y_predicted + self.EPSILON) - (1 - self.Y) * np.log(1 - self.Y_predicted + self.EPSILON)
-    
-    def derivate(self):
-        return -self.Y / self.Y_predicted + (1 - self.Y) / (1 - self.Y_predicted)
 
 
 class SoftmaxCrossEntropy(LossFunction):
@@ -53,7 +43,3 @@ class SoftmaxCrossEntropy(LossFunction):
         self.Y_predicted = Y_predicted
         self.Y = Y
         return -np.sum(self.Y * np.log(self.Y_predicted), axis=0, keepdims=True)
-    
-    def derivate(self):
-        return self.Y_predicted - self.Y
-    

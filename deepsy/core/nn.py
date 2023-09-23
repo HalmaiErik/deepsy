@@ -7,14 +7,14 @@ class NeuralNetwork:
         self._params = [layer.get_parameters() for layer in self._layers]
         self._grads = [layer.get_gradients() for layer in self._layers]
      
-    def forward_prop(self, input):
+    def forward_prop(self, input, is_train):
         for layer in self._layers:
-            input = layer.forward_prop(input)
+            input = layer.forward_prop(input, is_train)
         return input
         
-    def backward_prop(self, dA_cur_layer):
+    def backward_prop(self, dA_cur_layer, reg_lambda):
         for layer in reversed(self._layers):
-            dA_cur_layer = layer.backward_prop(dA_cur_layer)
+            dA_cur_layer = layer.backward_prop(dA_cur_layer, reg_lambda)
     
     def summary(self):
         return '\n'.join((['Layer {}: {}'.format(i + 1, layer.summary()) for i, layer in enumerate(self._layers)]))

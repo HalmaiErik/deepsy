@@ -10,40 +10,31 @@ class Model:
         self._loss_func = loss_func
         self.optimizer = optimizer
 
-    def train(self, X, Y, nr_epochs, batch_size=64):
+    def train(self, X, Y, nr_epochs, reg_lambda=0.0):
         for epoch in range(nr_epochs):
-            batch_start = 0
-            cost = 0
-            nr_batches = float(len(X) / batch_size)
-            while (batch_start < len(X)):
-                batch_end = min(batch_start + batch_size, len(X[0]))
-                X_batch = X[:, batch_start : batch_end]
-                Y_batch = Y[batch_start : batch_end]
+            # forward propagation
+            Y_predicted = self._neural_network.forward_prop(input=X, is_train=True)
 
-                # forward propagation
-                Y_batch_predicted = self._neural_network.forward_prop(input=X_batch)
+            # compute cost
+            cost = np.mean(self._loss_func.get_loss(Y_predicted, Y))
+            if reg_lambda > 0:
+                cost += self._calc_reg_cost_term(reg_lambda, X.shape[1])
 
-                # compute loss & cost
-                cost += np.mean(self._loss_func.get_loss(Y_batch_predicted, Y_batch))
+            # backward propagation: compute gradients for each layer
+            self._neural_network.backward_prop(Y_predicted - Y, reg_lambda)
 
-                # backward propagation: compute gradients for each layer
-                self._neural_network.backward_prop(self._loss_func.derivate())
+            # update gradients
+            self.optimizer.step(nn_parameters=self._neural_network.get_parameters(), nn_gradients=self._neural_network.get_gradients())
 
-                # update gradients
-                self.optimizer.step(nn_parameters=self._neural_network.get_parameters(), nn_gradients=self._neural_network.get_gradients())
-
-                batch_start += batch_size
-
-            cost = cost / nr_batches
             print('Epoch {}: cost = {}'.format(epoch + 1, cost))
 
     def validate(self, X, Y):
-        Y_predicted = self._neural_network.forward_prop(input=X)
+        Y_predicted = self._neural_network.forward_prop(input=X, is_train=False)
         cost = np.mean(self._loss_func.get_loss(Y_predicted, Y))
         return Y_predicted, cost
 
     def predict(self, X):
-        return self._neural_network.forward_prop(X)
+        return self._neural_network.forward_prop(X, is_train=False)
     
     def summary(self):
         print('Model summary:')
@@ -52,3 +43,10 @@ class Model:
     
     def get_neural_network(self):
         return self._neural_network
+    
+    def _calc_reg_cost_term(self, reg_lambda, m):
+        reg_term = 0.0
+        for layer_params in self._neural_network.get_parameters():
+            reg_term += np.sum(np.square(layer_params['W']))
+        reg_term *= 0.5 * reg_lambda / m
+        return reg_term
