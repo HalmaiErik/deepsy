@@ -8,7 +8,7 @@ nn = NeuralNetwork(layers=[
     Layer(nr_neurons=12, nr_in_features=8, activation_func=ReLU(), dropout_rate=0.2),
     Layer(nr_neurons=1, nr_in_features=12, activation_func=Sigmoid())
 ])
-model = Model(nn, loss_func=MSE(), optimizer=GradientDescent(0.2))
+model = Model(nn, loss_func=MSE(), optimizer=GradientDescent(learning_rate=0.2))
 
 # Train
 model.train(X_train, Y_train, nr_epochs=400, reg_lambda=0.2)
