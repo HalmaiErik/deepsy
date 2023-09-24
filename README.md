@@ -14,7 +14,7 @@ model = Model(nn, loss_func=MSE(), optimizer=GradientDescent(0.2))
 model.train(X_train, Y_train, nr_epochs=400, reg_lambda=0.2)
 
 # Validate
-Y_validation_predicted = model.validate(X_validation, Y_validation)
+Y_validation_predicted, cost_validation = model.validate(X_validation, Y_validation)
 
 # Test
 Y_test_predicted = model.predict(X_test)
