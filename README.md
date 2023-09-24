@@ -24,3 +24,4 @@ Y_test_predicted = model.predict(X_test)
 - add convolutional layers
 - add adam and other optimizers
 - add mini batch grad descent
+- create an auto differentiation app
